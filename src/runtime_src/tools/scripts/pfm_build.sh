@@ -82,7 +82,7 @@ cd $SRC_DIR
 echo " * Building Platform (from: $PWD)"
 echo "${PATH_TO_XSCT} -sdx $PFMSCRIPT"
 # clear the display, otherwise xsct will fail
-unset DISPLAY
+# unset DISPLAY
 ${PATH_TO_XSCT} -sdx $PFMSCRIPT
 
 # Copy platform directory to ORIGINAL_DIR/platform

@@ -1,0 +1,37 @@
+
+/ {
+    chosen {
+        bootargs = "earlycon clk_ignore_unused consoleblank=0 cma=1000M uio_pdrv_genirq.of_id=generic-uio";
+        stdout-path = "serial0:115200n8";
+    };
+};
+
+&axi_intc_0 {
+    compatible = "xlnx,xps-intc-1.00.a";
+    xlnx,kind-of-intr = <0x0>;
+    interrupt-parent = <&gic>;
+    interrupts = <0 89 4>;
+};
+
+&amba_pl {
+    zyxclmm_drm {
+        compatible = "xlnx,zocl";
+        status = "okay";
+        interrupt-parent = <&axi_intc_0>;
+        interrupts = <0  4>, <1  4>, <2  4>, <3  4>,
+                 <4  4>, <5  4>, <6  4>, <7  4>,
+                 <8  4>, <9  4>, <10 4>, <11 4>,
+                 <12 4>, <13 4>, <14 4>, <15 4>,
+                 <16 4>, <17 4>, <18 4>, <19 4>,
+                 <20 4>, <21 4>, <22 4>, <23 4>,
+                 <24 4>, <25 4>, <26 4>, <27 4>,
+                 <28 4>, <29 4>, <30 4>, <31 4>;
+    };
+    vcu_apm: apm@0xb0040000 {
+        #address-cells = <0x1>;
+        #size-cells = <0x1>;
+        compatible = "generic-uio";
+        reg = <0x0 0xb0040000 0x0 0x10000>;
+        reg-names = "generic";
+    };
+};

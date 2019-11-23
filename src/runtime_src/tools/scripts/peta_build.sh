@@ -67,10 +67,12 @@ config_rootfs()
 config_dts()
 {
 	DTS_FILE=$1
-	echo "cat $GLOB_DTS >> recipes-bsp/device-tree/files/system-user.dtsi"
-	cat $GLOB_DTS >> recipes-bsp/device-tree/files/system-user.dtsi
+	if [ ! -e ${ORIGINAL_DIR}/xsa_build/${XSA_NAME}/${XSA_NAME}_fragment.dts ]; then
+		echo "cat $GLOB_DTS >> $DTS_FILE"
+		cat $GLOB_DTS >> $DTS_FILE
+	fi
 	# By default, assume this script is used right after xsa_build.sh.
-	if [ -f ${ORIGINAL_DIR}/xsa_build/${XSA_NAME}/${XSA_NAME}_fragment.dts ]; then
+	if [ -e ${ORIGINAL_DIR}/xsa_build/${XSA_NAME}/${XSA_NAME}_fragment.dts ]; then
 		echo "cat ${ORIGINAL_DIR}/xsa_build/${XSA_NAME}/${XSA_NAME}_fragment.dts >> $DTS_FILE"
 		cat ${ORIGINAL_DIR}/xsa_build/${XSA_NAME}/${XSA_NAME}_fragment.dts >> $DTS_FILE
 	fi
@@ -80,27 +82,27 @@ install_recipes()
 {
 	META_USER_PATH=$1
 
-	cp -r ${XRT_REPO_DIR}/src/platform/recipes-xrt ${META_USER_PATH}
-	# By default, let XRT recipes point to current XRT workspace.
-	# PetaLinux fetch xrt source code from this workspace, instead of fetch from github.
-	SAVED_OPTIONS_LOCAL=$(set +o)
-	set +e
-	XRT_BB=${META_USER_PATH}/recipes-xrt/xrt/xrt_git.bb
-	ZOCL_BB=${META_USER_PATH}/recipes-xrt/zocl/zocl_git.bb
-	grep "inherit externalsrc" $XRT_BB
-	if [ $? != 0 ]; then
-		echo "inherit externalsrc" >> $XRT_BB
-		echo "EXTERNALSRC = \"$XRT_REPO_DIR/src\"" >> $XRT_BB
-		echo 'EXTERNALSRC_BUILD = "${WORKDIR}/build"' >> $XRT_BB
-	fi
+	# cp -r ${XRT_REPO_DIR}/src/platform/recipes-xrt ${META_USER_PATH}
+	# # By default, let XRT recipes point to current XRT workspace.
+	# # PetaLinux fetch xrt source code from this workspace, instead of fetch from github.
+	# SAVED_OPTIONS_LOCAL=$(set +o)
+	# set +e
+	# XRT_BB=${META_USER_PATH}/recipes-xrt/xrt/xrt_git.bb
+	# ZOCL_BB=${META_USER_PATH}/recipes-xrt/zocl/zocl_git.bb
+	# grep "inherit externalsrc" $XRT_BB
+	# if [ $? != 0 ]; then
+	# 	echo "inherit externalsrc" >> $XRT_BB
+	# 	echo "EXTERNALSRC = \"$XRT_REPO_DIR/src\"" >> $XRT_BB
+	# 	echo 'EXTERNALSRC_BUILD = "${WORKDIR}/build"' >> $XRT_BB
+	# fi
 
-	grep "inherit externalsrc" $ZOCL_BB
-	if [ $? != 0 ]; then
-		echo "inherit externalsrc" >> $ZOCL_BB
-		echo "EXTERNALSRC = \"$XRT_REPO_DIR/src/runtime_src/core/edge/drm/zocl\"" >> $ZOCL_BB
-		echo "EXTERNALSRC_BUILD = \"$XRT_REPO_DIR/src/runtime_src/core/edge/drm/zocl\"" >> $ZOCL_BB
-	fi
-	eval "$SAVED_OPTIONS_LOCAL"
+	# grep "inherit externalsrc" $ZOCL_BB
+	# if [ $? != 0 ]; then
+	# 	echo "inherit externalsrc" >> $ZOCL_BB
+	# 	echo "EXTERNALSRC = \"$XRT_REPO_DIR/src/runtime_src/core/edge/drm/zocl\"" >> $ZOCL_BB
+	# 	echo "EXTERNALSRC_BUILD = \"$XRT_REPO_DIR/src/runtime_src/core/edge/drm/zocl\"" >> $ZOCL_BB
+	# fi
+	# eval "$SAVED_OPTIONS_LOCAL"
 
 	# mnt-sd will run at the Linux boot time, it do below things
 	#  1. mount SD cart to /mnt
