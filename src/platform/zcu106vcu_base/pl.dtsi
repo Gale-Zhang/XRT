@@ -1,0 +1,61 @@
+/ {
+    chosen {
+        bootargs = "earlycon clk_ignore_unused consoleblank=0 cma=1000M uio_pdrv_genirq.of_id=generic-uio";
+        stdout-path = "serial0:115200n8";
+    };
+};
+
+/ {
+    amba_pl: amba_pl@0 {
+        #address-cells = <2>;
+        #size-cells = <2>;
+        compatible = "simple-bus";
+        ranges ;
+
+        psu_ctrl_ipi: PERIPHERAL@ff380000 {
+            compatible = "xlnx,PERIPHERAL-1.0";
+            reg = <0x0 0xff380000 0x0 0x80000>;
+        };
+
+        psu_message_buffers: PERIPHERAL@ff990000 {
+            compatible = "xlnx,PERIPHERAL-1.0";
+            reg = <0x0 0xff990000 0x0 0x10000>;
+        };
+
+        vcu_0: vcu@b0000000 {
+            #address-cells = <2>;
+            #clock-cells = <1>;
+            #size-cells = <2>;
+            clock-names = "pll_ref", "aclk", "vcu_core_enc", "vcu_core_dec", "vcu_mcu_enc", "vcu_mcu_dec";
+            clocks = <&misc_clk_1>, <&misc_clk_0>, <&vcu_0 1>, <&vcu_0 2>, <&vcu_0 3>, <&vcu_0 4>;
+            compatible = "xlnx,vcu-1.2", "xlnx,vcu";
+            interrupt-names = "vcu_host_interrupt";
+            interrupt-parent = <&gic>;
+            interrupts = <0 96 4>;
+            ranges ;
+            reg = <0x0 0xb0040000 0x0 0x1000>, <0x0 0xb0041000 0x0 0x1000>;
+            reg-names = "vcu_slcr", "logicore";
+            reset-gpios = <&gpio 119 0>;
+            encoder: al5e@b0000000 {
+                compatible = "al,al5e-1.2", "al,al5e";
+                interrupt-parent = <&gic>;
+                interrupts = <0 96 4>;
+                reg = <0x0 0xb0000000 0x0 0x10000>;
+            };
+            decoder: al5d@b0020000 {
+                compatible = "al,al5d-1.2", "al,al5d";
+                interrupt-parent = <&gic>;
+                interrupts = <0 96 4>;
+                reg = <0x0 0xb0020000 0x0 0x10000>;
+            };
+        };
+
+        vcu_apm: apm@0xb0040000 {
+            #address-cells = <0x1>;
+            #size-cells = <0x1>;
+            compatible = "generic-uio";
+            reg = <0x0 0xb0040000 0x0 0x10000>;
+            reg-names = "generic";
+        };
+    };
+};

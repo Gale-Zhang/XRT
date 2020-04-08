@@ -282,6 +282,10 @@ if [ ! -d recipes-core/images ]; then
 fi
 rootfs_menu $ROOTFS_MENU_CONFIG
 
+echo " * Configuring device-tree"
+echo "[CMD]: petalinux-config -c device-tree $PETA_CONFIG_OPT"
+petalinux-config -c device-tree $PETA_CONFIG_OPT
+
 echo " * Adding XRT Kernel Node to Device Tree"
 config_dts recipes-bsp/device-tree/files/system-user.dtsi
 
